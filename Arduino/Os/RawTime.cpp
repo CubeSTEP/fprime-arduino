@@ -47,22 +47,28 @@ RawTime::Status ArduinoRawTime::getTimeInterval(const Os::RawTime& other, Fw::Ti
     return Status::OP_OK;
 }
 
-Fw::SerializeStatus ArduinoRawTime::serializeTo(Fw::SerializeBufferBase& buffer) const {
-    Fw::SerializeStatus status = Fw::SerializeStatus::FW_SERIALIZE_OK;
-    status = buffer.serialize(this->m_handle.m_seconds);
-    if (status == Fw::FW_SERIALIZE_OK) {
-        status = buffer.serialize(this->m_handle.m_micros);
+Fw::SerializeStatus ArduinoRawTime::serializeTo(Fw::SerialBufferBase& buffer, Fw::Endianness mode) const {
+    Fw::SerializeStatus status = buffer.serializeFrom(this->m_handle.m_seconds, mode);
+    if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
+        return status;
     }
-    return status;
+    return buffer.serializeFrom(this->m_handle.m_micros, mode);
 }
 
-Fw::SerializeStatus ArduinoRawTime::deserializeFrom(Fw::SerializeBufferBase& buffer) {
-    Fw::SerializeStatus status = Fw::SerializeStatus::FW_SERIALIZE_OK;
-    status = buffer.deserialize(this->m_handle.m_seconds);
-    if (status == Fw::FW_SERIALIZE_OK) {
-        status = buffer.deserialize(this->m_handle.m_micros);
+Fw::SerializeStatus ArduinoRawTime::deserializeFrom(Fw::SerialBufferBase& buffer, Fw::Endianness mode) {
+    U32 sec = 0;
+    U32 usec = 0;
+    Fw::SerializeStatus status = buffer.deserializeTo(sec, mode);
+    if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
+        return status;
     }
-    return status;
+    status = buffer.deserializeTo(usec, mode);
+    if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
+        return status;
+    }
+    this->m_handle.m_seconds = sec;
+    this->m_handle.m_micros = usec;
+    return Fw::SerializeStatus::FW_SERIALIZE_OK;
 }
 }  // namespace Arduino
 }  // namespace Os
