@@ -8,7 +8,7 @@
 #undef DEPRECATED // Undefine in preparation for arduino's definition
 #include <Arduino.h>
 #undef DEPRECATED // Undefine arduino's definitions
-#define DEPRECATED(X,Y)
+#define DEPRECATED(func, message) func __attribute__((deprecated(message)))
 
 /**
  * Arduino.h often uses #define constants to setup values like HIGH and LOW. This means that other tokens that contain

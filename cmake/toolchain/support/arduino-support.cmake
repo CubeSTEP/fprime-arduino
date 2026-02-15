@@ -72,6 +72,9 @@ function(set_arduino_build_settings)
         string(APPEND CMAKE_EXE_LINKER_FLAGS_INIT " ${ARDUINO_LINKER_FLAGS}")
     endif()
 
+    # Quote any linker flag paths containing parentheses to avoid shell syntax errors
+    string(REGEX REPLACE "([^ ]*[(][^ ]*)" "\"\\1\"" CMAKE_EXE_LINKER_FLAGS_INIT "${CMAKE_EXE_LINKER_FLAGS_INIT}")
+
     read_json(INCLUDES "${WRAPPER_OUTPUT}" includes CXX)
     include_directories(${INCLUDES})
     if (NOT TARGET fprime_arduino_libraries)
