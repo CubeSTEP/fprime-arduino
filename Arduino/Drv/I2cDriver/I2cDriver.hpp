@@ -69,14 +69,13 @@ namespace Arduino {
 
       //! Handler implementation for writeRead
       //!
-      Drv::I2cStatus write_handler(
+      Drv::I2cStatus writeRead_handler(
           const FwIndexType portNum, /*!< The port number*/
           U32 addr, /*!< 
       I2C slave device address
       */
-          Fw::Buffer &serBuffer /*!< 
-      Buffer with data to read/write to/from
-      */
+          Fw::Buffer &writeBuffer, /*!< Buffer containing data to write */
+          Fw::Buffer &readBuffer /*!< Buffer to fill with incoming data */
       );
 
       //! Stores the open wire port, POINTER_CAST so Linux and Ardunio may use different types

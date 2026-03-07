@@ -49,4 +49,16 @@ Drv::I2cStatus I2cDriver::write_data(U32 addr, Fw::Buffer& fwBuffer) {
     return Drv::I2cStatus::I2C_OK;
 }
 
+Drv::I2cStatus I2cDriver::writeRead_data(U32 addr, Fw::Buffer& writeBuffer, Fw::Buffer& readBuffer) {
+    // Perform the write and then the read.  This is a simple implementation
+    // that uses the already-defined helpers; it does not guarantee the
+    // use of a repeated-start condition, but should be sufficient for
+    // most use cases.  Clients requiring more control can extend this.
+    Drv::I2cStatus status = write_data(addr, writeBuffer);
+    if (status != Drv::I2cStatus::I2C_OK) {
+        return status;
+    }
+    return read_data(addr, readBuffer);
+}
+
 }  // end namespace Arduino
