@@ -52,8 +52,8 @@ class StreamDriver : public StreamDriverComponentBase {
 
     //! Handler implementation for send
     //!
-    Drv::ByteStreamStatus send_handler(const FwIndexType portNum, /*!< The port number*/
-                                       Fw::Buffer& fwBuffer) override;
+    void send_handler(const FwIndexType portNum, /*!< The port number*/
+              Fw::Buffer& fwBuffer) override;
 
     //! Handler implementation for schedIn
     //!

@@ -10,7 +10,7 @@ namespace Arduino {
 //! \brief check is a is newer than b
 bool isNewer(const ArduinoRawTimeHandle& a, const ArduinoRawTimeHandle& b) {
     return ((a.m_seconds > b.m_seconds) ||
-           ((a.m_seconds == b.m_seconds) && (a.m_micros >= b.m_seconds)));
+           ((a.m_seconds == b.m_seconds) && (a.m_micros >= b.m_micros)));
 }
 
 RawTimeHandle* ArduinoRawTime::getHandle() {
@@ -47,22 +47,26 @@ RawTime::Status ArduinoRawTime::getTimeInterval(const Os::RawTime& other, Fw::Ti
     return Status::OP_OK;
 }
 
-Fw::SerializeStatus ArduinoRawTime::serializeTo(Fw::SerialBufferBase& buffer, Fw::Endianness mode) const {
-    Fw::SerializeStatus status = buffer.serializeFrom(this->m_handle.m_seconds, mode);
+Fw::SerializeStatus ArduinoRawTime::serialize(Fw::SerializeBufferBase& buffer) const {
+    static_assert(ArduinoRawTime::SERIALIZED_SIZE >= 2 * sizeof(U32),
+                  "ArduinoRawTime implementation requires at least 2*sizeof(U32) serialization size");
+    Fw::SerializeStatus status = buffer.serialize(this->m_handle.m_seconds);
     if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
         return status;
     }
-    return buffer.serializeFrom(this->m_handle.m_micros, mode);
+    return buffer.serialize(this->m_handle.m_micros);
 }
 
-Fw::SerializeStatus ArduinoRawTime::deserializeFrom(Fw::SerialBufferBase& buffer, Fw::Endianness mode) {
+Fw::SerializeStatus ArduinoRawTime::deserialize(Fw::SerializeBufferBase& buffer) {
+    static_assert(ArduinoRawTime::SERIALIZED_SIZE >= 2 * sizeof(U32),
+                  "ArduinoRawTime implementation requires at least 2*sizeof(U32) serialization size");
     U32 sec = 0;
     U32 usec = 0;
-    Fw::SerializeStatus status = buffer.deserializeTo(sec, mode);
+    Fw::SerializeStatus status = buffer.deserialize(sec);
     if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
         return status;
     }
-    status = buffer.deserializeTo(usec, mode);
+    status = buffer.deserialize(usec);
     if (status != Fw::SerializeStatus::FW_SERIALIZE_OK) {
         return status;
     }
