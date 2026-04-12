@@ -22,7 +22,6 @@ void I2cDriver::close() {
 }
 
 Drv::I2cStatus I2cDriver::read_data(U32 addr, Fw::Buffer& fwBuffer) {
-    FW_ASSERT(m_port_pointer != 0);
     TwoWire* wire_ptr = reinterpret_cast<TwoWire*>(m_port_pointer);
 
     wire_ptr->requestFrom(static_cast<U8>(addr), fwBuffer.getSize());
@@ -51,9 +50,13 @@ Drv::I2cStatus I2cDriver::write_data(U32 addr, Fw::Buffer& fwBuffer) {
 }
 
 Drv::I2cStatus I2cDriver::writeRead_data(U32 addr, Fw::Buffer& writeBuffer, Fw::Buffer& readBuffer) {
-    Drv::I2cStatus write_status = write_data(addr, writeBuffer);
-    if (write_status != Drv::I2cStatus::I2C_OK) {
-        return write_status;
+    // Perform the write and then the read.  This is a simple implementation
+    // that uses the already-defined helpers; it does not guarantee the
+    // use of a repeated-start condition, but should be sufficient for
+    // most use cases.  Clients requiring more control can extend this.
+    Drv::I2cStatus status = write_data(addr, writeBuffer);
+    if (status != Drv::I2cStatus::I2C_OK) {
+        return status;
     }
     return read_data(addr, readBuffer);
 }

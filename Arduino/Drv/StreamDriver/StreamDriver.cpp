@@ -26,9 +26,9 @@ void StreamDriver::recvReturnIn_handler(FwIndexType portNum, Fw::Buffer& fwBuffe
     this->deallocate_out(0, fwBuffer);
 }
 
-void StreamDriver ::send_handler(const FwIndexType portNum, Fw::Buffer& serBuffer) {
-    const Drv::ByteStreamStatus status = write_data(serBuffer);
-    this->sendReturnOut_out(portNum, serBuffer, status);
+Drv::ByteStreamStatus StreamDriver ::send_handler(const FwIndexType portNum, Fw::Buffer& serBuffer) {
+    (void) write_data(serBuffer);
+    return Drv::ByteStreamStatus::OP_OK;
 }
 
 void StreamDriver ::schedIn_handler(const FwIndexType portNum, U32 context) {
