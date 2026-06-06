@@ -21,33 +21,26 @@ I2cDriver ::~I2cDriver() {}
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
-Drv::I2cStatus I2cDriver ::read_handler(const FwIndexType portNum, U32 addr, Fw::Buffer& serBuffer) {
+Drv::I2cStatus I2cDriver::read_handler(const FwIndexType portNum, U32 addr, Fw::Buffer& serBuffer) {
     // Ensure buffer is not a nullptr
     FW_ASSERT(serBuffer.getData());
 
     return read_data(addr, serBuffer);
 }
 
-Drv::I2cStatus I2cDriver ::write_handler(const FwIndexType portNum, U32 addr, Fw::Buffer& serBuffer) {
+Drv::I2cStatus I2cDriver::write_handler(const FwIndexType portNum, U32 addr, Fw::Buffer& serBuffer) {
     // Ensure buffer is not a nullptr
     FW_ASSERT(serBuffer.getData());
 
     return write_data(addr, serBuffer);
 }
 
-Drv::I2cStatus I2cDriver ::writeRead_handler(const FwIndexType portNum, U32 addr,
-                                              Fw::Buffer& writeBuffer,
-                                              Fw::Buffer& readBuffer) {
-    // Basic sanity checks
+Drv::I2cStatus I2cDriver::writeRead_handler(const FwIndexType portNum, U32 addr, Fw::Buffer& writeBuffer, Fw::Buffer& readBuffer) {
+    // Ensure buffers are not nullptr
     FW_ASSERT(writeBuffer.getData());
     FW_ASSERT(readBuffer.getData());
 
-    // perform a write followed by a read
-    Drv::I2cStatus status = write_data(addr, writeBuffer);
-    if (status != Drv::I2cStatus::I2C_OK) {
-        return status;
-    }
-    return read_data(addr, readBuffer);
+    return writeRead_data(addr, writeBuffer, readBuffer);
 }
 
 }  // end namespace Arduino
